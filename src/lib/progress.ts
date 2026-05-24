@@ -1,5 +1,6 @@
 const COMPLETED_KEY = "prescription-master-completed";
 const SOUND_KEY = "prescription-master-sound";
+const LOCAL_CASES_KEY = "prescription-master-local-cases";
 
 export function getCompletedCases(): string[] {
   return JSON.parse(localStorage.getItem(COMPLETED_KEY) ?? "[]") as string[];
@@ -18,6 +19,10 @@ export function getCompletedCount(caseIds: string[]): number {
 
 export function resetCompleted(): void {
   localStorage.removeItem(COMPLETED_KEY);
+}
+
+export function resetLocalCases(): void {
+  localStorage.removeItem(LOCAL_CASES_KEY);
 }
 
 export function getSoundEnabled(): boolean {

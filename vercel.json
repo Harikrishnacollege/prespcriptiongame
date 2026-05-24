@@ -1,0 +1,13 @@
+{
+  "functions": {
+    "api/[...path].ts": {
+      "includeFiles": "dental prescriptions.pptx"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/((?!api/.*).*)",
+      "destination": "/index.html"
+    }
+  ]
+}
