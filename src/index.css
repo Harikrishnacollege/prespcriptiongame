@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color: #10324a;
+  background: #eef8ff;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.medical-bg {
+  background:
+    radial-gradient(circle at 10% 10%, rgba(125, 211, 252, 0.25), transparent 28%),
+    linear-gradient(135deg, #eef8ff 0%, #f8fcff 44%, #e7f5ff 100%);
+}
+
+.prescription-paper {
+  background-image: linear-gradient(#e8f3fb 1px, transparent 1px);
+  background-size: 100% 34px;
+}
