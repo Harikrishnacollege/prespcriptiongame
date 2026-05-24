@@ -1,14 +1,24 @@
 import { EvaluationResult, PrescriptionCase, PrescriptionMap, PRESCRIPTION_KEYS, SECTION_LABELS, SECTION_WEIGHTS } from "./types";
+import { defaultCases } from "./defaultCases.generated";
 
 const LOCAL_CASES_KEY = "prescription-master-local-cases";
 
 export async function fetchCases(): Promise<PrescriptionCase[]> {
   const localCases = localStorage.getItem(LOCAL_CASES_KEY);
-  if (localCases) return JSON.parse(localCases) as PrescriptionCase[];
+  if (localCases) {
+    const parsed = JSON.parse(localCases) as PrescriptionCase[];
+    if (parsed.length) return parsed;
+    localStorage.removeItem(LOCAL_CASES_KEY);
+  }
 
-  const response = await fetch("/api/cases");
-  if (!response.ok) throw new Error("Unable to load cases");
-  return (await response.json()).cases;
+  try {
+    const response = await fetch("/api/cases");
+    if (!response.ok) throw new Error("Unable to load cases");
+    const cases = (await response.json()).cases as PrescriptionCase[];
+    return cases.length ? cases : defaultCases;
+  } catch {
+    return defaultCases;
+  }
 }
 
 export async function uploadCaseDeck(file: File): Promise<PrescriptionCase[]> {

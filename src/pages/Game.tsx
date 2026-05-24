@@ -18,16 +18,30 @@ export default function Game() {
   const [current, setCurrent] = useState<PrescriptionCase | null>(null);
   const [leaving, setLeaving] = useState(Boolean(location.state?.next));
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     let alive = true;
-    fetchCases().then((cases) => {
-      if (!alive) return;
-      const next = chooseCase(cases, Boolean(location.state?.practice || location.state?.next));
-      setCurrent(next);
-      setLoading(false);
-      setTimeout(() => setLeaving(false), 950);
-    });
+    setLoading(true);
+    setError("");
+    fetchCases()
+      .then((cases) => {
+        if (!alive) return;
+        if (!cases.length) {
+          setError("No prescription cases were found. Upload the PPTX again from Practice Cases.");
+          setLoading(false);
+          return;
+        }
+        const next = chooseCase(cases, Boolean(location.state?.practice || location.state?.next));
+        setCurrent(next);
+        setLoading(false);
+        setTimeout(() => setLeaving(false), 950);
+      })
+      .catch(() => {
+        if (!alive) return;
+        setError("Cases could not be loaded. Please refresh or upload the PPTX again.");
+        setLoading(false);
+      });
     return () => {
       alive = false;
     };
@@ -39,8 +53,35 @@ export default function Game() {
     navigate("/prescription");
   };
 
-  if (loading || !current) {
+  if (loading) {
     return <main className="medical-bg grid min-h-screen place-items-center font-black text-sky-700">Preparing consultation...</main>;
+  }
+
+  if (error || !current) {
+    return (
+      <main className="medical-bg grid min-h-screen place-items-center p-4">
+        <section className="max-w-md rounded-lg border border-sky-100 bg-white p-6 text-center shadow-soft">
+          <h1 className="text-2xl font-black text-slate-950">Cases did not load</h1>
+          <p className="mt-3 text-slate-600">{error || "No case is available right now."}</p>
+          <div className="mt-6 grid gap-3">
+            <button
+              type="button"
+              onClick={() => window.location.reload()}
+              className="rounded-lg bg-sky-500 px-5 py-3 font-black text-white"
+            >
+              Retry
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate("/upload")}
+              className="rounded-lg border border-sky-200 px-5 py-3 font-black text-sky-700"
+            >
+              Upload PPTX
+            </button>
+          </div>
+        </section>
+      </main>
+    );
   }
 
   return (
